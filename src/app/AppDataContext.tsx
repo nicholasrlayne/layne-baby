@@ -31,7 +31,8 @@ export function AppDataProvider({ children: reactChildren }: { children: ReactNo
   const [caregivers, setCaregivers] = useState<Caregiver[]>([])
   const [childrenList, setChildrenList] = useState<Child[]>([])
   const [activeChildId, setActiveChildId] = useState<string | null>(null)
-  const [bootstrapLoading, setBootstrapLoading] = useState(true)
+  const [caregiverLoading, setCaregiverLoading] = useState(true)
+  const [childrenLoading, setChildrenLoading] = useState(true)
   const [activitiesVersion, setActivitiesVersion] = useState(0)
 
   useEffect(() => {
@@ -75,23 +76,32 @@ export function AppDataProvider({ children: reactChildren }: { children: ReactNo
   }, [caregiver?.family_id])
 
   useEffect(() => {
+    // Gate on authLoading so this never runs (and clears caregiverLoading) on the
+    // transient render where auth has resolved to null before the real session lands.
+    if (authLoading) return
     if (!session) {
-      setBootstrapLoading(false)
+      setCaregiverLoading(false)
       return
     }
-    setBootstrapLoading(true)
-    refreshCaregiver().finally(() => setBootstrapLoading(false))
-  }, [session, refreshCaregiver])
+    setCaregiverLoading(true)
+    refreshCaregiver().finally(() => setCaregiverLoading(false))
+  }, [session, authLoading, refreshCaregiver])
 
   useEffect(() => {
+    // Gate on caregiverLoading so this never runs (and clears childrenLoading) on the
+    // transient render before the caregiver fetch has told us whether a family exists.
+    if (caregiverLoading) return
     if (caregiver?.family_id) {
-      refreshChildren()
-      refreshCaregivers()
+      setChildrenLoading(true)
+      Promise.all([refreshChildren(), refreshCaregivers()]).finally(() => setChildrenLoading(false))
     } else {
       setChildrenList([])
       setCaregivers([])
+      setChildrenLoading(false)
     }
-  }, [caregiver?.family_id, refreshChildren, refreshCaregivers])
+  }, [caregiverLoading, caregiver?.family_id, refreshChildren, refreshCaregivers])
+
+  const bootstrapLoading = caregiverLoading || childrenLoading
 
   useEffect(() => {
     if (childrenList.length && !activeChildId) {

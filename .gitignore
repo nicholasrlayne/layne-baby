@@ -25,3 +25,5 @@ e2e-test.mjs
 *.njsproj
 *.sln
 *.sw?
+debug-test.mjs
+debug-sleep.mjs
