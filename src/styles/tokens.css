@@ -1,0 +1,135 @@
+:root {
+  /* Fonts */
+  --font-serif: 'Newsreader', Georgia, serif;
+  --font-sans: 'Figtree', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+
+  /* Spacing (4px base) */
+  --space-2xs: 2px;
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 12px;
+  --space-lg: 16px;
+  --space-xl: 20px;
+  --space-2xl: 24px;
+  --space-3xl: 32px;
+  --space-4xl: 40px;
+  --space-5xl: 56px;
+  --space-6xl: 72px;
+
+  /* Radii */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-pill: 999px;
+
+  /* Motion */
+  --motion-base: 180ms;
+  --motion-ease: cubic-bezier(0.2, 0, 0.2, 1);
+
+  /* Touch targets */
+  --touch-min: 48px;
+  --touch-primary: 56px;
+  --touch-fab: 64px;
+
+  /* Tracker accents (fixed hues, same in both themes) */
+  --track-feed-fill: #F2C078;
+  --track-feed-tint-dark: #3A2F1E;
+  --track-feed-tint-light: #F9E9CB;
+  --track-feed-ink-dark: #F2C078;
+  --track-feed-ink-light: #7E5310;
+
+  --track-pump-fill: #EC9A9A;
+  --track-pump-tint-dark: #3C2626;
+  --track-pump-tint-light: #F7DCDC;
+  --track-pump-ink-dark: #EC9A9A;
+  --track-pump-ink-light: #8E3B3B;
+
+  --track-diaper-fill: #A8CBA0;
+  --track-diaper-tint-dark: #263021;
+  --track-diaper-tint-light: #DCEAD7;
+  --track-diaper-ink-dark: #A8CBA0;
+  --track-diaper-ink-light: #3D6135;
+
+  --track-sleep-fill: #A9B6E8;
+  --track-sleep-tint-dark: #22263C;
+  --track-sleep-tint-light: #DEE3F7;
+  --track-sleep-ink-dark: #A9B6E8;
+  --track-sleep-ink-light: #3F4C86;
+
+  /* Status */
+  --status-success-dark: #96C7A0;
+  --status-success-light: #3B6E48;
+  --status-warning-dark: #E8B563;
+  --status-warning-light: #8A5A10;
+  --status-danger-dark: #E0806F;
+  --status-danger-light: #9E3A28;
+  --status-info-dark: #9FB4D8;
+  --status-info-light: #3C5480;
+
+  --sheet-scrim: rgba(19, 17, 16, 0.6);
+}
+
+/* ---- Dark theme (default) ---- */
+:root,
+:root[data-theme='dark'] {
+  --bg-base: #16120F;
+  --bg-surface: #1B1714;
+  --bg-raised: #241F1B;
+  --border-subtle: #332C26;
+  --border-strong: #4A4038;
+  --text-primary: #F5EFE8;
+  --text-secondary: #C3B7AC;
+  --text-muted: #8E8177;
+  --text-on-accent: #16120F;
+  --brand-primary: #D98C63;
+  --brand-hover: #E8B98F;
+
+  --track-feed-tint: var(--track-feed-tint-dark);
+  --track-feed-ink: var(--track-feed-ink-dark);
+  --track-pump-tint: var(--track-pump-tint-dark);
+  --track-pump-ink: var(--track-pump-ink-dark);
+  --track-diaper-tint: var(--track-diaper-tint-dark);
+  --track-diaper-ink: var(--track-diaper-ink-dark);
+  --track-sleep-tint: var(--track-sleep-tint-dark);
+  --track-sleep-ink: var(--track-sleep-ink-dark);
+
+  --status-success: var(--status-success-dark);
+  --status-warning: var(--status-warning-dark);
+  --status-danger: var(--status-danger-dark);
+  --status-info: var(--status-info-dark);
+
+  color-scheme: dark;
+}
+
+/* ---- Light theme (daylight alternate) ---- */
+:root[data-theme='light'] {
+  --bg-base: #FBF7F2;
+  --bg-surface: #FFFFFF;
+  --bg-raised: #F2EBE2;
+  --border-subtle: #E6DCD0;
+  --border-strong: #CFC2B3;
+  --text-primary: #241E19;
+  --text-secondary: #5C4F45;
+  --text-muted: #8A7B6E;
+  --text-on-accent: #16120F;
+  --brand-primary: #B2603A;
+  --brand-hover: #8E4726;
+
+  --track-feed-tint: var(--track-feed-tint-light);
+  --track-feed-ink: var(--track-feed-ink-light);
+  --track-pump-tint: var(--track-pump-tint-light);
+  --track-pump-ink: var(--track-pump-ink-light);
+  --track-diaper-tint: var(--track-diaper-tint-light);
+  --track-diaper-ink: var(--track-diaper-ink-light);
+  --track-sleep-tint: var(--track-sleep-tint-light);
+  --track-sleep-ink: var(--track-sleep-ink-light);
+
+  --status-success: var(--status-success-light);
+  --status-warning: var(--status-warning-light);
+  --status-danger: var(--status-danger-light);
+  --status-info: var(--status-info-light);
+
+  color-scheme: light;
+}
