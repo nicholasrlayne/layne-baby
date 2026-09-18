@@ -191,12 +191,12 @@
 }
 .lb-entryrow__bar { width: 4px; height: 36px; border-radius: 4px; flex: none; background: var(--accent-fill); }
 .lb-entryrow__main { flex: 1; min-width: 0; }
-.lb-entryrow__title { font-family: var(--font-sans); font-size: 17px; font-weight: 600; color: var(--accent-ink); }
-.lb-entryrow__meta { font-family: var(--font-sans); font-size: 13px; color: var(--text-secondary); margin-top: 2px; }
-.lb-entryrow__caregiver { font-family: var(--font-sans); font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+.lb-entryrow__title { display: block; font-family: var(--font-sans); font-size: 17px; font-weight: 600; color: var(--accent-ink); }
+.lb-entryrow__meta { display: block; font-family: var(--font-sans); font-size: 13px; color: var(--text-secondary); margin-top: 2px; }
+.lb-entryrow__caregiver { display: block; font-family: var(--font-sans); font-size: 12px; color: var(--text-muted); margin-top: 2px; }
 .lb-entryrow__trailing { text-align: right; flex: none; }
-.lb-entryrow__value { font-family: var(--font-sans); font-size: 15px; font-weight: 600; font-variant-numeric: tabular-nums; color: var(--text-primary); }
-.lb-entryrow__time { font-family: var(--font-sans); font-size: 12px; color: var(--text-muted); margin-top: 2px; font-variant-numeric: tabular-nums; }
+.lb-entryrow__value { display: block; font-family: var(--font-sans); font-size: 15px; font-weight: 600; font-variant-numeric: tabular-nums; color: var(--text-primary); }
+.lb-entryrow__time { display: block; font-family: var(--font-sans); font-size: 12px; color: var(--text-muted); margin-top: 2px; font-variant-numeric: tabular-nums; }
 
 /* ---------- Badge ---------- */
 .lb-badge {
