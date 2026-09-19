@@ -8,7 +8,7 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['favicon.svg', 'app-icon.svg'],
+      includeAssets: ['favicon.svg', 'app-icon.svg', 'apple-touch-icon.png'],
       manifest: {
         name: 'Layne Baby',
         short_name: 'Layne',
