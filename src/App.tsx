@@ -1,4 +1,4 @@
-import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
+import { BrowserRouter, Navigate, Route, Routes, useSearchParams } from 'react-router-dom'
 import { ThemeProvider } from './app/ThemeContext'
 import { AppDataProvider, useAppData } from './app/AppDataContext'
 import { AppShell } from './app/AppShell'
@@ -36,6 +36,30 @@ function Gate() {
   return <Navigate to="/app/activity" replace />
 }
 
+function RequireOnboarded({ children: node }: { children: React.ReactNode }) {
+  const { session, authLoading, caregiver, bootstrapLoading, children: kids } = useAppData()
+  if (authLoading || (session && bootstrapLoading)) return <FullScreenLoading />
+  if (!session) return <Navigate to="/sign-in" replace />
+  if (!caregiver?.family_id) return <Navigate to="/onboarding/family" replace />
+  if (kids.length === 0) return <Navigate to="/onboarding/baby" replace />
+  return <>{node}</>
+}
+
+// Guards the "create or join a family" chooser: a returning user who already has a
+// family (e.g. their PWA icon or browser reopened straight to this URL from history)
+// should never see it again — skip straight to wherever they actually belong. Does NOT
+// guard the family-code screen, which is legitimately visited with a family_id already
+// set (it's shown right after create_family succeeds, to display the new invite code).
+function RequireNoFamilyYet({ children: node }: { children: React.ReactNode }) {
+  const { session, authLoading, caregiver, bootstrapLoading, children: kids } = useAppData()
+  if (authLoading || (session && bootstrapLoading)) return <FullScreenLoading />
+  if (!session) return <Navigate to="/sign-in" replace />
+  if (caregiver?.family_id) {
+    return <Navigate to={kids.length === 0 ? '/onboarding/baby' : '/app/activity'} replace />
+  }
+  return <>{node}</>
+}
+
 function RequireAuth({ children: node }: { children: React.ReactNode }) {
   const { session, authLoading } = useAppData()
   if (authLoading) return <FullScreenLoading />
@@ -43,12 +67,17 @@ function RequireAuth({ children: node }: { children: React.ReactNode }) {
   return <>{node}</>
 }
 
-function RequireOnboarded({ children: node }: { children: React.ReactNode }) {
+// Guards the "add a baby" onboarding step: a returning user who already has a child
+// should be sent to the dashboard instead, unless they explicitly opened this screen
+// from within the app to add another child (returnTo is only ever set by that flow).
+function RequireNoChildYet({ children: node }: { children: React.ReactNode }) {
   const { session, authLoading, caregiver, bootstrapLoading, children: kids } = useAppData()
+  const [params] = useSearchParams()
+  const addingAnother = params.has('returnTo')
   if (authLoading || (session && bootstrapLoading)) return <FullScreenLoading />
   if (!session) return <Navigate to="/sign-in" replace />
   if (!caregiver?.family_id) return <Navigate to="/onboarding/family" replace />
-  if (kids.length === 0) return <Navigate to="/onboarding/baby" replace />
+  if (!addingAnother && kids.length > 0) return <Navigate to="/app/activity" replace />
   return <>{node}</>
 }
 
@@ -61,9 +90,9 @@ function AppRoutes() {
       <Route
         path="/onboarding/family"
         element={
-          <RequireAuth>
+          <RequireNoFamilyYet>
             <CreateOrJoinFamily />
-          </RequireAuth>
+          </RequireNoFamilyYet>
         }
       />
       <Route
@@ -77,9 +106,9 @@ function AppRoutes() {
       <Route
         path="/onboarding/baby"
         element={
-          <RequireAuth>
+          <RequireNoChildYet>
             <AddBaby />
-          </RequireAuth>
+          </RequireNoChildYet>
         }
       />
 
