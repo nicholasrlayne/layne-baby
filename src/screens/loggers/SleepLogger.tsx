@@ -81,6 +81,17 @@ export function SleepLogger() {
     }
   }
 
+  async function handleStartTimeChange(iso: string) {
+    setStartTime(iso)
+    const targetId = entryId ?? runningId
+    if (!targetId) return
+    try {
+      await updateActivity(targetId, { started_at: iso })
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Could not update the start time.')
+    }
+  }
+
   async function handleStop() {
     if (!runningId) return
     setSaving(true)
@@ -138,8 +149,8 @@ export function SleepLogger() {
     }
   }
 
-  const canSaveCompleted = !!endTime && !running
-  const showSaveWithoutStopping = !running && !runningId && !entryId
+  const targetId = entryId ?? runningId
+  const canSave = !!targetId || (!!startTime && !!endTime)
 
   return (
     <div className="lb-screen">
@@ -147,8 +158,8 @@ export function SleepLogger() {
         tracker="sleep"
         title="Sleep"
         onClose={() => navigate(-1)}
-        onSave={canSaveCompleted ? handleSave : undefined}
-        saveDisabled={saving || loading}
+        onSave={handleSave}
+        saveDisabled={saving || loading || !canSave}
       />
       <div className="lb-screen__body">
         {loading ? (
@@ -176,7 +187,7 @@ export function SleepLogger() {
             </div>
 
             <div>
-              <DateTimeField dateLabel="Start date" timeLabel="Start time" value={startTime} onChange={setStartTime} />
+              <DateTimeField dateLabel="Start date" timeLabel="Start time" value={startTime} onChange={handleStartTimeChange} />
               <DateTimeField
                 dateLabel="End date"
                 timeLabel="End time"
@@ -192,14 +203,9 @@ export function SleepLogger() {
 
             <div style={{ marginTop: 'auto', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
               <span className="caption">Saves as logged by {caregiver?.display_name}</span>
-              {entryId && (
-                <Button size="lg" accent="sleep" fullWidth onClick={handleSave} disabled={saving || !endTime}>
-                  {saving ? 'Saving…' : 'Save changes'}
-                </Button>
-              )}
-              {showSaveWithoutStopping && (
-                <Button variant="secondary" size="lg" fullWidth onClick={handleSave} disabled={saving || !endTime}>
-                  Save without stopping
+              {!running && canSave && (
+                <Button size="lg" accent="sleep" fullWidth onClick={handleSave} disabled={saving}>
+                  {saving ? 'Saving…' : entryId ? 'Save changes' : 'Save without stopping'}
                 </Button>
               )}
               {(entryId || runningId) && (

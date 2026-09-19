@@ -22,6 +22,7 @@ export function PumpLogger() {
 
   const [runningId, setRunningId] = useState<string | null>(null)
   const [startTime, setStartTime] = useState(() => new Date().toISOString())
+  const [endTime, setEndTime] = useState<string | null>(null)
   const [running, setRunning] = useState(false)
   const [leftOz, setLeftOz] = useState(0)
   const [rightOz, setRightOz] = useState(0)
@@ -38,6 +39,7 @@ export function PumpLogger() {
         const a = await getActivityById(entryId)
         if (a) {
           setStartTime(a.started_at)
+          setEndTime(a.ended_at)
           setNotes(a.notes ?? '')
           const d = a.data as Record<string, unknown>
           setLeftOz(Number(d.left_oz ?? 0))
@@ -86,9 +88,11 @@ export function PumpLogger() {
     } else {
       setSaving(true)
       try {
+        const now = new Date().toISOString()
         if (runningId) {
-          await updateActivity(runningId, { ended_at: new Date().toISOString() })
+          await updateActivity(runningId, { ended_at: now })
         }
+        setEndTime(now)
         setRunning(false)
         setFocused('left')
       } catch (err) {
@@ -96,6 +100,17 @@ export function PumpLogger() {
       } finally {
         setSaving(false)
       }
+    }
+  }
+
+  async function handleStartTimeChange(iso: string) {
+    setStartTime(iso)
+    const targetId = entryId ?? runningId
+    if (!targetId) return
+    try {
+      await updateActivity(targetId, { started_at: iso })
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Could not update the start time.')
     }
   }
 
@@ -107,7 +122,7 @@ export function PumpLogger() {
       const data = { left_oz: leftOz, right_oz: rightOz }
       const targetId = entryId ?? runningId
       if (targetId) {
-        await updateActivity(targetId, { started_at: startTime, notes: notes || null, data, ended_at: running ? null : new Date().toISOString() })
+        await updateActivity(targetId, { started_at: startTime, notes: notes || null, data, ended_at: running ? null : endTime ?? new Date().toISOString() })
       } else {
         await createActivity({
           family_id: caregiver.family_id,
@@ -145,7 +160,7 @@ export function PumpLogger() {
 
   return (
     <div className="lb-screen">
-      <LoggerHeader tracker="pump" title="Pump" onClose={() => navigate(-1)} onSave={running ? undefined : handleSave} saveDisabled={saving} />
+      <LoggerHeader tracker="pump" title="Pump" onClose={() => navigate(-1)} onSave={handleSave} saveDisabled={saving || loading} />
       <div className="lb-screen__body">
         {loading ? (
           <div className="lb-empty-state">Loading…</div>
@@ -199,7 +214,7 @@ export function PumpLogger() {
             </div>
 
             <div>
-              <DateTimeField dateLabel="Start date" timeLabel="Start time" value={startTime} onChange={setStartTime} disabled={running} />
+              <DateTimeField dateLabel="Start date" timeLabel="Start time" value={startTime} onChange={handleStartTimeChange} />
               <InlineField label="Notes" value={notes} onChange={setNotes} placeholder="Add a note" />
             </div>
 
