@@ -148,7 +148,11 @@
 
 /* ---------- TabBar ---------- */
 .lb-tabbar {
-  flex: none;
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 30;
   display: flex;
   align-items: stretch;
   height: 74px;
@@ -233,8 +237,8 @@
 .lb-screen {
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
-  min-height: 100dvh;
+  height: 100vh;
+  height: 100dvh;
   background: var(--bg-base);
 }
 .lb-screen__body {
