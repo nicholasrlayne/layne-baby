@@ -3,7 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom'
 import { LoggerHeader } from '../../components/LoggerHeader'
 import { TimerDisplay } from '../../components/TimerDisplay'
 import { Button } from '../../components/Button'
-import { InlineField, fromLocalInputValue, toLocalInputValue } from '../../components/InlineField'
+import { DateTimeField, InlineField } from '../../components/InlineField'
 import { useAppData } from '../../app/AppDataContext'
 import {
   createActivity,
@@ -199,13 +199,7 @@ export function PumpLogger() {
             </div>
 
             <div>
-              <InlineField
-                label="Start time"
-                type="datetime-local"
-                value={toLocalInputValue(startTime)}
-                onChange={(v) => setStartTime(fromLocalInputValue(v))}
-                disabled={running}
-              />
+              <DateTimeField dateLabel="Start date" timeLabel="Start time" value={startTime} onChange={setStartTime} disabled={running} />
               <InlineField label="Notes" value={notes} onChange={setNotes} placeholder="Add a note" />
             </div>
 

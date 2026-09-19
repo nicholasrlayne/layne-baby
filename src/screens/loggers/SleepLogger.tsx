@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { LoggerHeader } from '../../components/LoggerHeader'
 import { TimerDisplay } from '../../components/TimerDisplay'
-import { InlineField, fromLocalInputValue, toLocalInputValue } from '../../components/InlineField'
+import { DateTimeField, InlineField } from '../../components/InlineField'
 import { Button } from '../../components/Button'
 import { useAppData } from '../../app/AppDataContext'
 import {
@@ -176,19 +176,14 @@ export function SleepLogger() {
             </div>
 
             <div>
-              <InlineField
-                label="Start"
-                type="datetime-local"
-                value={toLocalInputValue(startTime)}
-                onChange={(v) => setStartTime(fromLocalInputValue(v))}
-              />
-              <InlineField
-                label="End"
-                type="datetime-local"
-                value={endTime ? toLocalInputValue(endTime) : ''}
-                onChange={(v) => setEndTime(v ? fromLocalInputValue(v) : null)}
+              <DateTimeField dateLabel="Start date" timeLabel="Start time" value={startTime} onChange={setStartTime} />
+              <DateTimeField
+                dateLabel="End date"
+                timeLabel="End time"
+                value={endTime}
+                onChange={setEndTime}
                 disabled={running}
-                placeholder="Set on stop"
+                emptyHint="Set on stop"
               />
               <InlineField label="Notes" value={notes} onChange={setNotes} placeholder="Add a note" />
             </div>

@@ -29,3 +29,60 @@ export function toLocalInputValue(iso: string): string {
 export function fromLocalInputValue(local: string): string {
   return new Date(local).toISOString()
 }
+
+export function toLocalDateValue(iso: string): string {
+  return toLocalInputValue(iso).slice(0, 10)
+}
+
+export function toLocalTimeValue(iso: string): string {
+  return toLocalInputValue(iso).slice(11, 16)
+}
+
+export function combineLocalDateTime(dateStr: string, timeStr: string): string {
+  return fromLocalInputValue(`${dateStr}T${timeStr}`)
+}
+
+interface DateTimeFieldProps {
+  dateLabel: string
+  timeLabel: string
+  value: string | null
+  onChange: (iso: string) => void
+  disabled?: boolean
+  emptyHint?: string
+}
+
+const inputStyle = { textAlign: 'right' as const, color: 'var(--text-secondary)', fontSize: 16, fontFamily: 'var(--font-sans)' }
+
+export function DateTimeField({ dateLabel, timeLabel, value, onChange, disabled, emptyHint }: DateTimeFieldProps) {
+  const now = () => new Date().toISOString()
+  const dateVal = value ? toLocalDateValue(value) : ''
+  const timeVal = value ? toLocalTimeValue(value) : ''
+
+  function handleDateChange(newDate: string) {
+    if (!newDate) return
+    onChange(combineLocalDateTime(newDate, timeVal || toLocalTimeValue(now())))
+  }
+
+  function handleTimeChange(newTime: string) {
+    if (!newTime) return
+    onChange(combineLocalDateTime(dateVal || toLocalDateValue(now()), newTime))
+  }
+
+  return (
+    <div>
+      <div className="lb-fieldrow">
+        <span className="lb-fieldrow__label">{dateLabel}</span>
+        <input type="date" value={dateVal} onChange={(e) => handleDateChange(e.target.value)} disabled={disabled} style={inputStyle} />
+      </div>
+      <div className="lb-fieldrow">
+        <span className="lb-fieldrow__label">{timeLabel}</span>
+        <input type="time" value={timeVal} onChange={(e) => handleTimeChange(e.target.value)} disabled={disabled} style={inputStyle} />
+      </div>
+      {!value && emptyHint && (
+        <p className="caption" style={{ margin: '8px 4px 0' }}>
+          {emptyHint}
+        </p>
+      )}
+    </div>
+  )
+}
