@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import type { KeyboardEvent, MouseEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAppData } from '../../app/AppDataContext'
 import { ChildSwitcher } from '../../components/ChildSwitcher'
@@ -21,11 +22,24 @@ const TRACKER_TYPES: Record<Tracker, string[]> = {
 }
 
 function RunningCard({ activity, onStopped }: { activity: ActivityWithCaregiver; onStopped: () => void }) {
+  const navigate = useNavigate()
   const tracker = trackerForType(activity.type as never)
   const elapsed = useElapsedSeconds(activity.started_at, true)
   const [stopping, setStopping] = useState(false)
 
-  async function handleStop() {
+  function openLogger() {
+    navigate(`/app/log/${tracker}`)
+  }
+
+  function handleKeyDown(e: KeyboardEvent<HTMLDivElement>) {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault()
+      openLogger()
+    }
+  }
+
+  async function handleStop(e: MouseEvent) {
+    e.stopPropagation()
     setStopping(true)
     try {
       await updateActivity(activity.id, { ended_at: new Date().toISOString() })
@@ -36,7 +50,14 @@ function RunningCard({ activity, onStopped }: { activity: ActivityWithCaregiver;
   }
 
   return (
-    <div className="lb-card" style={{ ...accentVars(tracker), overflow: 'hidden' }}>
+    <div
+      className="lb-card"
+      style={{ ...accentVars(tracker), overflow: 'hidden', cursor: 'pointer' }}
+      role="button"
+      tabIndex={0}
+      onClick={openLogger}
+      onKeyDown={handleKeyDown}
+    >
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, background: 'var(--accent-fill)', color: 'var(--text-on-accent)', padding: '8px 16px' }}>
         <span className="heading" style={{ color: 'var(--text-on-accent)' }}>{TRACKER_LABEL[tracker]}</span>
         <span className="sans" style={{ fontSize: 12, fontWeight: 600, letterSpacing: '.08em', textTransform: 'uppercase' }}>Running</span>
