@@ -163,6 +163,7 @@ export function ActivityDashboard() {
                     value={summary?.value ?? '—'}
                     unit={summary?.unit}
                     onAdd={() => navigate('/app/log/feed')}
+                    onOpen={lastFeed ? () => navigate(`/app/log/feed?entryId=${lastFeed.id}`) : undefined}
                   />
                 )
               }
@@ -177,6 +178,7 @@ export function ActivityDashboard() {
                     value={summary?.value ?? '—'}
                     unit={summary?.unit}
                     onAdd={() => navigate('/app/log/pump')}
+                    onOpen={lastPump ? () => navigate(`/app/log/pump?entryId=${lastPump.id}`) : undefined}
                   />
                 )
               }
@@ -190,6 +192,7 @@ export function ActivityDashboard() {
                     sublabel={lastSleep ? `${formatClockTime(lastSleep.started_at)} · ${caregiverName(lastSleep)}` : 'Log the first one'}
                     value={summary?.value ?? '—'}
                     onAdd={() => navigate('/app/log/sleep')}
+                    onOpen={lastSleep ? () => navigate(`/app/log/sleep?entryId=${lastSleep.id}`) : undefined}
                   />
                 )
               }
@@ -201,6 +204,7 @@ export function ActivityDashboard() {
                   sublabel={lastDiaper ? `${formatClockTime(lastDiaper.started_at)} · ${timeAgo(lastDiaper.started_at)} · ${caregiverName(lastDiaper)}` : 'Log the first one'}
                   value={lastDiaper ? summarizeActivity(lastDiaper).title : '—'}
                   onAdd={() => navigate('/app/log/diaper')}
+                  onOpen={lastDiaper ? () => navigate(`/app/log/diaper?entryId=${lastDiaper.id}`) : undefined}
                 />
               )
             })}

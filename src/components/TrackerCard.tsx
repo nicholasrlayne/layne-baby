@@ -1,3 +1,4 @@
+import type { KeyboardEvent, MouseEvent } from 'react'
 import { accentVars, TRACKER_LABEL } from './accent'
 import { IconButton } from './IconButton'
 import type { Tracker } from '../lib/types'
@@ -9,11 +10,33 @@ interface TrackerCardProps {
   value: string
   unit?: string
   onAdd: () => void
+  /** Opens the most recent entry for editing when tapping the card itself. */
+  onOpen?: () => void
 }
 
-export function TrackerCard({ tracker, label, sublabel, value, unit, onAdd }: TrackerCardProps) {
+export function TrackerCard({ tracker, label, sublabel, value, unit, onAdd, onOpen }: TrackerCardProps) {
+  function handleAdd(e: MouseEvent) {
+    e.stopPropagation()
+    onAdd()
+  }
+
+  function handleKeyDown(e: KeyboardEvent<HTMLDivElement>) {
+    if (!onOpen) return
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault()
+      onOpen()
+    }
+  }
+
   return (
-    <div className="lb-trackercard" style={accentVars(tracker)}>
+    <div
+      className="lb-trackercard"
+      style={{ ...accentVars(tracker), cursor: onOpen ? 'pointer' : undefined }}
+      role={onOpen ? 'button' : undefined}
+      tabIndex={onOpen ? 0 : undefined}
+      onClick={onOpen}
+      onKeyDown={handleKeyDown}
+    >
       <div className="lb-trackercard__header">
         <span className="heading">{TRACKER_LABEL[tracker]}</span>
       </div>
@@ -26,7 +49,7 @@ export function TrackerCard({ tracker, label, sublabel, value, unit, onAdd }: Tr
           </span>
           <span className="lb-trackercard__sublabel">{sublabel}</span>
         </span>
-        <IconButton icon="plus" label={`Add ${TRACKER_LABEL[tracker].toLowerCase()}`} variant="solid" size="md" onClick={onAdd} />
+        <IconButton icon="plus" label={`Add ${TRACKER_LABEL[tracker].toLowerCase()}`} variant="solid" size="md" onClick={handleAdd} />
       </div>
     </div>
   )
