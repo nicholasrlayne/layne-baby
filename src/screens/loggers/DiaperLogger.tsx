@@ -3,7 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom'
 import { LoggerHeader } from '../../components/LoggerHeader'
 import { SegmentedControl } from '../../components/SegmentedControl'
 import { Chip } from '../../components/Chip'
-import { DateTimeField, InlineField } from '../../components/InlineField'
+import { InlineField, TimeField } from '../../components/InlineField'
 import { Button } from '../../components/Button'
 import { Icon } from '../../components/Icon'
 import { useAppData } from '../../app/AppDataContext'
@@ -110,7 +110,7 @@ export function DiaperLogger() {
           <div className="lb-empty-state">Loading…</div>
         ) : (
           <>
-            <DateTimeField dateLabel="Date" timeLabel="Time" value={time} onChange={setTime} />
+            <TimeField label="Time" value={time} onChange={setTime} />
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
               <span className="label">Type</span>

@@ -3,7 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom'
 import { LoggerHeader } from '../../components/LoggerHeader'
 import { TimerDisplay } from '../../components/TimerDisplay'
 import { Button } from '../../components/Button'
-import { DateTimeField, InlineField } from '../../components/InlineField'
+import { InlineField, TimeField } from '../../components/InlineField'
 import { useAppData } from '../../app/AppDataContext'
 import {
   createActivity,
@@ -214,7 +214,7 @@ export function PumpLogger() {
             </div>
 
             <div>
-              <DateTimeField dateLabel="Start date" timeLabel="Start time" value={startTime} onChange={handleStartTimeChange} />
+              <TimeField label="Start time" value={startTime} onChange={handleStartTimeChange} />
               <InlineField label="Notes" value={notes} onChange={setNotes} placeholder="Add a note" />
             </div>
 

@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { LoggerHeader } from '../../components/LoggerHeader'
 import { TimerDisplay } from '../../components/TimerDisplay'
-import { DateTimeField, InlineField } from '../../components/InlineField'
+import { InlineField, TimeField } from '../../components/InlineField'
 import { Button } from '../../components/Button'
 import { useAppData } from '../../app/AppDataContext'
 import {
@@ -187,14 +187,14 @@ export function SleepLogger() {
             </div>
 
             <div>
-              <DateTimeField dateLabel="Start date" timeLabel="Start time" value={startTime} onChange={handleStartTimeChange} />
-              <DateTimeField
-                dateLabel="End date"
-                timeLabel="End time"
+              <TimeField label="Start time" value={startTime} onChange={handleStartTimeChange} />
+              <TimeField
+                label="End time"
                 value={endTime}
                 onChange={setEndTime}
                 disabled={running}
-                emptyHint="Set on stop"
+                emptyHint="Set on stop. A time earlier than the start is assumed to be the next morning."
+                anchor={startTime}
               />
               <InlineField label="Notes" value={notes} onChange={setNotes} placeholder="Add a note" />
             </div>

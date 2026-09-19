@@ -3,7 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom'
 import { LoggerHeader } from '../../components/LoggerHeader'
 import { SegmentedControl } from '../../components/SegmentedControl'
 import { StepperRow } from '../../components/Stepper'
-import { DateTimeField, InlineField } from '../../components/InlineField'
+import { InlineField, TimeField } from '../../components/InlineField'
 import { Button } from '../../components/Button'
 import { TextField } from '../../components/TextField'
 import { Chip } from '../../components/Chip'
@@ -193,7 +193,7 @@ export function FeedLogger() {
             )}
 
             <div>
-              <DateTimeField dateLabel="Start date" timeLabel="Start time" value={startTime} onChange={setStartTime} />
+              <TimeField label="Start time" value={startTime} onChange={setStartTime} />
               <InlineField label="Notes" value={notes} onChange={setNotes} placeholder="Add a note" />
             </div>
 

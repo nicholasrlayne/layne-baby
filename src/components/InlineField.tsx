@@ -20,63 +20,97 @@ export function InlineField({ label, value, onChange, ...rest }: InlineFieldProp
   )
 }
 
-export function toLocalInputValue(iso: string): string {
+function toLocalInputValue(iso: string): string {
   const d = new Date(iso)
   const offsetMs = d.getTimezoneOffset() * 60000
   return new Date(d.getTime() - offsetMs).toISOString().slice(0, 16)
 }
 
-export function fromLocalInputValue(local: string): string {
+function fromLocalInputValue(local: string): string {
   return new Date(local).toISOString()
 }
 
-export function toLocalDateValue(iso: string): string {
+function toLocalDateValue(iso: string): string {
   return toLocalInputValue(iso).slice(0, 10)
 }
 
-export function toLocalTimeValue(iso: string): string {
+function toLocalTimeValue(iso: string): string {
   return toLocalInputValue(iso).slice(11, 16)
 }
 
-export function combineLocalDateTime(dateStr: string, timeStr: string): string {
+function combineLocalDateTime(dateStr: string, timeStr: string): string {
   return fromLocalInputValue(`${dateStr}T${timeStr}`)
 }
 
-interface DateTimeFieldProps {
-  dateLabel: string
-  timeLabel: string
+const DAY_LABEL_OPTS: Intl.DateTimeFormatOptions = { month: 'short', day: 'numeric' }
+
+/**
+ * Resolves a new time-of-day into a full ISO timestamp without a date field to ask the user.
+ *
+ * - Anchor-less fields (e.g. a start time): keep the existing value's calendar date; if the
+ *   result would land in the future, it must actually mean "yesterday" (a logged time can't be
+ *   ahead of now), so the date rolls back a day.
+ * - Anchored fields (e.g. a sleep end time, anchored to its start): use the anchor's calendar
+ *   date; if the result would land at or before the anchor, it crossed midnight, so the date
+ *   rolls forward a day (a 10pm start with a 6am end is next-day morning).
+ */
+function resolveTimeEdit(prevIso: string | null, timeStr: string, anchorIso?: string): string {
+  if (anchorIso) {
+    const anchorDate = toLocalDateValue(anchorIso)
+    let combined = combineLocalDateTime(anchorDate, timeStr)
+    if (new Date(combined).getTime() < new Date(anchorIso).getTime()) {
+      const rolled = new Date(combined)
+      rolled.setDate(rolled.getDate() + 1)
+      combined = rolled.toISOString()
+    }
+    return combined
+  }
+
+  const basisIso = prevIso ?? new Date().toISOString()
+  const datePart = toLocalDateValue(basisIso)
+  let combined = combineLocalDateTime(datePart, timeStr)
+  if (new Date(combined).getTime() > Date.now()) {
+    const rolled = new Date(combined)
+    rolled.setDate(rolled.getDate() - 1)
+    combined = rolled.toISOString()
+  }
+  return combined
+}
+
+interface TimeFieldProps {
+  label: string
   value: string | null
   onChange: (iso: string) => void
   disabled?: boolean
   emptyHint?: string
+  /** ISO of a related start time this field is relative to (e.g. a sleep end time). */
+  anchor?: string
 }
 
-const inputStyle = { textAlign: 'right' as const, color: 'var(--text-secondary)', fontSize: 16, fontFamily: 'var(--font-sans)' }
-
-export function DateTimeField({ dateLabel, timeLabel, value, onChange, disabled, emptyHint }: DateTimeFieldProps) {
-  const now = () => new Date().toISOString()
-  const dateVal = value ? toLocalDateValue(value) : ''
+export function TimeField({ label, value, onChange, disabled, emptyHint, anchor }: TimeFieldProps) {
   const timeVal = value ? toLocalTimeValue(value) : ''
+  const isToday = value ? toLocalDateValue(value) === toLocalDateValue(new Date().toISOString()) : true
+  const dayLabel = value && !isToday ? new Date(value).toLocaleDateString(undefined, DAY_LABEL_OPTS) : null
 
-  function handleDateChange(newDate: string) {
-    if (!newDate) return
-    onChange(combineLocalDateTime(newDate, timeVal || toLocalTimeValue(now())))
-  }
-
-  function handleTimeChange(newTime: string) {
+  function handleChange(newTime: string) {
     if (!newTime) return
-    onChange(combineLocalDateTime(dateVal || toLocalDateValue(now()), newTime))
+    onChange(resolveTimeEdit(value, newTime, anchor))
   }
 
   return (
     <div>
       <div className="lb-fieldrow">
-        <span className="lb-fieldrow__label">{dateLabel}</span>
-        <input type="date" value={dateVal} onChange={(e) => handleDateChange(e.target.value)} disabled={disabled} style={inputStyle} />
-      </div>
-      <div className="lb-fieldrow">
-        <span className="lb-fieldrow__label">{timeLabel}</span>
-        <input type="time" value={timeVal} onChange={(e) => handleTimeChange(e.target.value)} disabled={disabled} style={inputStyle} />
+        <span className="lb-fieldrow__label">{label}</span>
+        <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          {dayLabel && <span className="caption">{dayLabel}</span>}
+          <input
+            type="time"
+            value={timeVal}
+            onChange={(e) => handleChange(e.target.value)}
+            disabled={disabled}
+            style={{ textAlign: 'right', color: 'var(--text-secondary)', fontSize: 16, fontFamily: 'var(--font-sans)' }}
+          />
+        </span>
       </div>
       {!value && emptyHint && (
         <p className="caption" style={{ margin: '8px 4px 0' }}>
