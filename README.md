@@ -45,3 +45,12 @@ All tables are scoped to the caller's family via row-level security using a `cur
 - `npm run build` — type-check and build for production
 - `npm run preview` — preview the production build
 - `npm run lint` — run oxlint
+
+## Deployment
+
+Deployed on Render as a static site:
+
+- Build command: `npm install && npm run build`
+- Publish directory: `dist`
+- Environment variables: `VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_KEY` (set as build-time env vars, since Vite inlines them at build time)
+- `public/_redirects` rewrites all paths to `/index.html` so client-side routes (e.g. `/app/history`) work on direct load/refresh
