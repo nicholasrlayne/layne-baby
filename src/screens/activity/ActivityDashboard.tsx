@@ -130,7 +130,7 @@ export function ActivityDashboard() {
     <>
       <ChildSwitcher
         name={activeChild.first_name}
-        date={`${formatDateHeader()} · ${formatChildAge(activeChild)}`}
+        date={[formatDateHeader(), formatChildAge(activeChild)].filter(Boolean).join(' · ')}
         multiple
         onClick={() => navigate('/app/hub')}
       />

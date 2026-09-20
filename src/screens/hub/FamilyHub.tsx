@@ -82,7 +82,9 @@ export function FamilyHub() {
                 </span>
                 <span style={{ flex: 1, minWidth: 0 }}>
                   <span className="heading" style={{ display: 'block' }}>{child.first_name}</span>
-                  <span className="body-text" style={{ display: 'block' }}>{formatChildAge(child)}</span>
+                  {formatChildAge(child) && (
+                    <span className="body-text" style={{ display: 'block' }}>{formatChildAge(child)}</span>
+                  )}
                   <ChildSummaryLine childId={child.id} />
                 </span>
                 <Icon name="chevron-right" size={20} color="var(--text-muted)" />

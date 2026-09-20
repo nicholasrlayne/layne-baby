@@ -11,7 +11,7 @@ import {
 import type { Child } from './types'
 
 export function formatChildAge(child: Pick<Child, 'birthdate'>): string {
-  if (!child.birthdate) return 'Birthdate not set'
+  if (!child.birthdate) return ''
   const birth = new Date(child.birthdate)
   const years = differenceInYears(new Date(), birth)
   if (years >= 2) return `${years} years`

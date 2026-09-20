@@ -75,7 +75,7 @@ export function Account() {
         <span className="label" style={{ display: 'block', padding: '0 0 6px' }}>Children</span>
         <div className="lb-card">
           {children.map((child) => (
-            <FieldRow key={child.id} label={child.first_name} value={formatChildAge(child)} chevron onClick={() => navigate('/app/hub')} />
+            <FieldRow key={child.id} label={child.first_name} value={formatChildAge(child) || '—'} chevron onClick={() => navigate('/app/hub')} />
           ))}
           <FieldRow label="Add child" placeholder="Add" onClick={() => navigate('/onboarding/baby?returnTo=/app/account')} />
         </div>
