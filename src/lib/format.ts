@@ -31,8 +31,8 @@ export function formatDateHeader(date: Date = new Date()): string {
 
 export function formatDayGroup(iso: string): string {
   const d = new Date(iso)
-  if (isToday(d)) return 'Today'
-  if (isYesterday(d)) return 'Yesterday'
+  if (isToday(d)) return `Today, ${format(d, 'MMM d')}`
+  if (isYesterday(d)) return `Yesterday, ${format(d, 'MMM d')}`
   return format(d, 'EEEE, MMM d')
 }
 
