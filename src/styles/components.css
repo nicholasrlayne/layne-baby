@@ -241,6 +241,13 @@
   min-height: 100dvh;
   background: var(--bg-base);
 }
+@keyframes lb-sheet-in {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.lb-screen--modal {
+  animation: lb-sheet-in var(--motion-enter) var(--motion-ease) both;
+}
 .lb-screen__body {
   flex: 1;
   min-height: 0;
@@ -399,7 +406,7 @@
   border-radius: 50%;
   background: #fff;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
-  transition: transform var(--motion-base) var(--motion-ease);
+  transition: transform 320ms var(--motion-spring);
 }
 .lb-switch--on .lb-switch__thumb { transform: translateX(20px); }
 
@@ -409,6 +416,14 @@
   border-bottom: 1px solid var(--border-subtle);
 }
 .lb-header-bar--plain .lb-header-bar__action { color: var(--brand-primary); }
+
+@keyframes lb-stagger-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.lb-stagger-in {
+  animation: lb-stagger-in 280ms var(--motion-ease) both;
+}
 
 .lb-empty-state {
   padding: var(--space-3xl) var(--space-lg);

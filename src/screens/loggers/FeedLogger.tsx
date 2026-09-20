@@ -132,7 +132,7 @@ export function FeedLogger() {
   const total = leftMin + rightMin
 
   return (
-    <div className="lb-screen">
+    <div className="lb-screen lb-screen--modal">
       <LoggerHeader tracker="feed" title="Feed" onClose={() => navigate(-1)} onSave={handleSave} saveDisabled={saving || loading} />
       <div className="lb-screen__body">
         {loading ? (

@@ -39,7 +39,7 @@ export function FamilyHub() {
   const { children, caregivers, setActiveChildId } = useAppData()
 
   return (
-    <div className="lb-screen">
+    <div className="lb-screen lb-screen--modal">
       <div className="lb-screen__body" style={{ paddingTop: 'calc(var(--space-lg) + env(safe-area-inset-top))' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
           <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>

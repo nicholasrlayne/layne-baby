@@ -36,7 +36,7 @@ export function EditActivities() {
   }
 
   return (
-    <div className="lb-screen">
+    <div className="lb-screen lb-screen--modal">
       <div className="lb-header-bar lb-header-bar--plain">
         <button className="lb-header-bar__action" onClick={() => navigate(-1)} type="button">
           Cancel

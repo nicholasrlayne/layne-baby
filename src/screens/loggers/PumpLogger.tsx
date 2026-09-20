@@ -159,7 +159,7 @@ export function PumpLogger() {
   const total = leftOz + rightOz
 
   return (
-    <div className="lb-screen">
+    <div className="lb-screen lb-screen--modal">
       <LoggerHeader tracker="pump" title="Pump" onClose={() => navigate(-1)} onSave={handleSave} saveDisabled={saving || loading} />
       <div className="lb-screen__body">
         {loading ? (

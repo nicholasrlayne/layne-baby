@@ -134,13 +134,15 @@ export function ActivityDashboard() {
       />
 
       {running && (
-        <RunningCard
-          activity={running}
-          onStopped={() => {
-            setRunningPump(null)
-            setRunningSleep(null)
-          }}
-        />
+        <div className="lb-stagger-in">
+          <RunningCard
+            activity={running}
+            onStopped={() => {
+              setRunningPump(null)
+              setRunningSleep(null)
+            }}
+          />
+        </div>
       )}
 
       {loading ? (
@@ -149,12 +151,12 @@ export function ActivityDashboard() {
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
           {trackerOrder
             .filter((t) => t !== runningTracker && visibleTrackers.has(t))
-            .map((tracker) => {
+            .map((tracker, index) => {
+              let card
               if (tracker === 'feed') {
                 const summary = lastFeed ? summarizeActivity(lastFeed) : null
-                return (
+                card = (
                   <TrackerCard
-                    key="feed"
                     tracker="feed"
                     label={lastFeed ? 'Last feed' : 'No feeds yet'}
                     sublabel={lastFeed ? `${formatClockTime(lastFeed.started_at)} · ${summary!.title.toLowerCase()} · ${caregiverName(lastFeed)}` : 'Log the first one'}
@@ -164,12 +166,10 @@ export function ActivityDashboard() {
                     onOpen={lastFeed ? () => navigate(`/app/log/feed?entryId=${lastFeed.id}`) : undefined}
                   />
                 )
-              }
-              if (tracker === 'pump') {
+              } else if (tracker === 'pump') {
                 const summary = lastPump ? summarizeActivity(lastPump) : null
-                return (
+                card = (
                   <TrackerCard
-                    key="pump"
                     tracker="pump"
                     label={lastPump ? 'Last pump' : 'No pumps yet'}
                     sublabel={lastPump ? `${formatClockTime(lastPump.started_at)} · ${summary!.meta ?? ''} · ${caregiverName(lastPump)}` : 'Log the first one'}
@@ -179,12 +179,10 @@ export function ActivityDashboard() {
                     onOpen={lastPump ? () => navigate(`/app/log/pump?entryId=${lastPump.id}`) : undefined}
                   />
                 )
-              }
-              if (tracker === 'sleep') {
+              } else if (tracker === 'sleep') {
                 const summary = lastSleep ? summarizeActivity(lastSleep) : null
-                return (
+                card = (
                   <TrackerCard
-                    key="sleep"
                     tracker="sleep"
                     label={lastSleep ? 'Last sleep' : 'No sleep logged yet'}
                     sublabel={lastSleep ? `${formatClockTime(lastSleep.started_at)} · ${caregiverName(lastSleep)}` : 'Log the first one'}
@@ -193,17 +191,22 @@ export function ActivityDashboard() {
                     onOpen={lastSleep ? () => navigate(`/app/log/sleep?entryId=${lastSleep.id}`) : undefined}
                   />
                 )
+              } else {
+                card = (
+                  <TrackerCard
+                    tracker="diaper"
+                    label={`${diaperCount} change${diaperCount === 1 ? '' : 's'} today`}
+                    sublabel={lastDiaper ? `${formatClockTime(lastDiaper.started_at)} · ${timeAgo(lastDiaper.started_at)} · ${caregiverName(lastDiaper)}` : 'Log the first one'}
+                    value={lastDiaper ? summarizeActivity(lastDiaper).title : '—'}
+                    onAdd={() => navigate('/app/log/diaper')}
+                    onOpen={lastDiaper ? () => navigate(`/app/log/diaper?entryId=${lastDiaper.id}`) : undefined}
+                  />
+                )
               }
               return (
-                <TrackerCard
-                  key="diaper"
-                  tracker="diaper"
-                  label={`${diaperCount} change${diaperCount === 1 ? '' : 's'} today`}
-                  sublabel={lastDiaper ? `${formatClockTime(lastDiaper.started_at)} · ${timeAgo(lastDiaper.started_at)} · ${caregiverName(lastDiaper)}` : 'Log the first one'}
-                  value={lastDiaper ? summarizeActivity(lastDiaper).title : '—'}
-                  onAdd={() => navigate('/app/log/diaper')}
-                  onOpen={lastDiaper ? () => navigate(`/app/log/diaper?entryId=${lastDiaper.id}`) : undefined}
-                />
+                <div key={tracker} className="lb-stagger-in" style={{ animationDelay: `${index * 40}ms` }}>
+                  {card}
+                </div>
               )
             })}
         </div>

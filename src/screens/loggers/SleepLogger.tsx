@@ -153,7 +153,7 @@ export function SleepLogger() {
   const canSave = !!targetId || (!!startTime && !!endTime)
 
   return (
-    <div className="lb-screen">
+    <div className="lb-screen lb-screen--modal">
       <LoggerHeader
         tracker="sleep"
         title="Sleep"

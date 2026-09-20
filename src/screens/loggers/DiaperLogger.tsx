@@ -103,7 +103,7 @@ export function DiaperLogger() {
   }
 
   return (
-    <div className="lb-screen">
+    <div className="lb-screen lb-screen--modal">
       <LoggerHeader tracker="diaper" title="Diaper" onClose={() => navigate(-1)} onSave={handleSave} saveDisabled={saving || loading} saveLabel="Save" />
       <div className="lb-screen__body">
         {loading ? (
