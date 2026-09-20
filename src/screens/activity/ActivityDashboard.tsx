@@ -79,7 +79,7 @@ function RunningCard({ activity, onStopped }: { activity: ActivityWithCaregiver;
 
 export function ActivityDashboard() {
   const navigate = useNavigate()
-  const { activeChild, activitiesVersion } = useAppData()
+  const { activeChild, activeChildId, children, setActiveChildId, activitiesVersion } = useAppData()
   const [lastFeed, setLastFeed] = useState<ActivityWithCaregiver | null>(null)
   const [lastPump, setLastPump] = useState<ActivityWithCaregiver | null>(null)
   const [lastSleep, setLastSleep] = useState<ActivityWithCaregiver | null>(null)
@@ -124,13 +124,21 @@ export function ActivityDashboard() {
   const trackerOrder: Tracker[] = ['feed', 'pump', 'sleep', 'diaper']
   const visibleTrackers = new Set(activeChild.visible_trackers ?? trackerOrder)
 
+  function handleSwitchChild() {
+    if (children.length < 2) return
+    const idx = children.findIndex((c) => c.id === activeChildId)
+    const next = children[(idx + 1) % children.length]
+    setActiveChildId(next.id)
+  }
+
   return (
     <>
       <ChildSwitcher
         name={activeChild.first_name}
         date={[formatDateHeader(), formatChildAge(activeChild)].filter(Boolean).join(' · ')}
-        multiple
-        onClick={() => navigate('/app/hub')}
+        multiple={children.length > 1}
+        onSwitch={handleSwitchChild}
+        onOpenMenu={() => navigate('/app/hub')}
       />
 
       {running && (

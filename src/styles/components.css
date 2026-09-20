@@ -143,8 +143,25 @@
   width: 100%;
   padding: var(--space-sm) 0;
 }
+.lb-childswitcher__row {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+  flex: 1;
+  min-width: 0;
+}
 .lb-childswitcher__name { font-family: var(--font-serif); font-size: 24px; color: var(--text-primary); }
 .lb-childswitcher__date { font-family: var(--font-sans); font-size: 13px; color: var(--text-muted); }
+.lb-childswitcher__chevron {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  margin-right: -10px;
+}
 
 /* ---------- TabBar ---------- */
 .lb-tabbar {

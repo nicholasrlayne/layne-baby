@@ -31,9 +31,10 @@ export function formatDateHeader(date: Date = new Date()): string {
 
 export function formatDayGroup(iso: string): string {
   const d = new Date(iso)
-  if (isToday(d)) return `Today, ${format(d, 'MMM d')}`
-  if (isYesterday(d)) return `Yesterday, ${format(d, 'MMM d')}`
-  return format(d, 'EEEE, MMM d')
+  const yearSuffix = d.getFullYear() !== new Date().getFullYear() ? `, ${d.getFullYear()}` : ''
+  if (isToday(d)) return `Today, ${format(d, 'MMM d')}${yearSuffix}`
+  if (isYesterday(d)) return `Yesterday, ${format(d, 'MMM d')}${yearSuffix}`
+  return `${format(d, 'EEEE, MMM d')}${yearSuffix}`
 }
 
 export function timeAgo(iso: string): string {
