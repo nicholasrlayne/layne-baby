@@ -92,6 +92,22 @@ export function SleepLogger() {
     }
   }
 
+  async function handleResume() {
+    if (!entryId) return
+    setSaving(true)
+    setError(null)
+    try {
+      await updateActivity(entryId, { ended_at: null })
+      setEndTime(null)
+      setRunning(true)
+      setRunningId(entryId)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Could not resume the timer.')
+    } finally {
+      setSaving(false)
+    }
+  }
+
   async function handleStop() {
     if (!runningId) return
     setSaving(true)
@@ -170,6 +186,7 @@ export function SleepLogger() {
               <TimerDisplay
                 label={running ? `Asleep since ${formatClockTime(startTime)}` : endTime ? 'Sleep logged' : 'Not started'}
                 startedAt={startTime}
+                endedAt={endTime}
                 running={running}
                 accent="sleep"
               />
@@ -177,12 +194,14 @@ export function SleepLogger() {
                 <Button size="lg" accent="sleep" onClick={handleStop} disabled={saving}>
                   Stop timer
                 </Button>
+              ) : entryId ? (
+                <Button size="lg" accent="sleep" onClick={handleResume} disabled={saving}>
+                  {saving ? 'Resuming…' : 'Resume timer'}
+                </Button>
               ) : (
-                !entryId && (
-                  <Button size="lg" accent="sleep" onClick={handleStart} disabled={saving}>
-                    Start timer
-                  </Button>
-                )
+                <Button size="lg" accent="sleep" onClick={handleStart} disabled={saving}>
+                  Start timer
+                </Button>
               )}
             </div>
 

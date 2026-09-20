@@ -167,7 +167,7 @@ export function PumpLogger() {
         ) : (
           <>
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 20, padding: '24px 0 20px', borderBottom: '1px solid var(--border-subtle)' }}>
-              <TimerDisplay label={running ? 'Running' : 'Stopped'} startedAt={startTime} running={running} accent="pump" />
+              <TimerDisplay label={running ? 'Running' : 'Stopped'} startedAt={startTime} endedAt={endTime} running={running} accent="pump" />
               <Button size="lg" accent="pump" onClick={handleStartStop} disabled={saving}>
                 {running ? 'Stop timer' : 'Start timer'}
               </Button>
