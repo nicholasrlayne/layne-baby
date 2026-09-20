@@ -15,7 +15,13 @@ export function AppShell() {
 
   return (
     <div className="lb-screen">
-      <div className="lb-screen__body" style={{ paddingBottom: 'calc(74px + var(--space-lg) + env(safe-area-inset-bottom))' }}>
+      <div
+        className="lb-screen__body"
+        style={{
+          paddingTop: 'calc(var(--space-lg) + env(safe-area-inset-top))',
+          paddingBottom: 'calc(74px + var(--space-lg) + env(safe-area-inset-bottom))',
+        }}
+      >
         <Outlet />
       </div>
       <TabBar items={TAB_ITEMS} value={active} onChange={(id) => navigate(`/app/${id}`)} />
