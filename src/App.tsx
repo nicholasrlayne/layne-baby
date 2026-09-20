@@ -9,6 +9,7 @@ import { FamilyCode } from './screens/auth/FamilyCode'
 import { AddBaby } from './screens/auth/AddBaby'
 import { FamilyHub } from './screens/hub/FamilyHub'
 import { ActivityDashboard } from './screens/activity/ActivityDashboard'
+import { EditActivities } from './screens/activity/EditActivities'
 import { History } from './screens/history/History'
 import { Trends } from './screens/trends/Trends'
 import { Account } from './screens/account/Account'
@@ -132,6 +133,14 @@ function AppRoutes() {
         element={
           <RequireOnboarded>
             <FamilyHub />
+          </RequireOnboarded>
+        }
+      />
+      <Route
+        path="/app/activities/edit"
+        element={
+          <RequireOnboarded>
+            <EditActivities />
           </RequireOnboarded>
         }
       />

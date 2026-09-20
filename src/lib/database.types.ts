@@ -150,6 +150,7 @@ export type Database = {
           id: string
           sex: string
           use_adjusted_age: boolean
+          visible_trackers: string[]
         }
         Insert: {
           birthdate?: string | null
@@ -159,6 +160,7 @@ export type Database = {
           id?: string
           sex?: string
           use_adjusted_age?: boolean
+          visible_trackers?: string[]
         }
         Update: {
           birthdate?: string | null
@@ -168,6 +170,7 @@ export type Database = {
           id?: string
           sex?: string
           use_adjusted_age?: boolean
+          visible_trackers?: string[]
         }
         Relationships: [
           {

@@ -4,9 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import { useAppData } from '../../app/AppDataContext'
 import { ChildSwitcher } from '../../components/ChildSwitcher'
 import { TrackerCard } from '../../components/TrackerCard'
-import { IconButton } from '../../components/IconButton'
 import { Button } from '../../components/Button'
-import { Badge } from '../../components/Badge'
 import { accentVars, TRACKER_LABEL } from '../../components/accent'
 import { formatElapsed, useElapsedSeconds } from '../../lib/useElapsed'
 import { formatChildAge, formatClockTime, formatDateHeader, timeAgo } from '../../lib/format'
@@ -81,7 +79,7 @@ function RunningCard({ activity, onStopped }: { activity: ActivityWithCaregiver;
 
 export function ActivityDashboard() {
   const navigate = useNavigate()
-  const { activeChild, children, activitiesVersion } = useAppData()
+  const { activeChild, activitiesVersion } = useAppData()
   const [lastFeed, setLastFeed] = useState<ActivityWithCaregiver | null>(null)
   const [lastPump, setLastPump] = useState<ActivityWithCaregiver | null>(null)
   const [lastSleep, setLastSleep] = useState<ActivityWithCaregiver | null>(null)
@@ -90,7 +88,6 @@ export function ActivityDashboard() {
   const [runningSleep, setRunningSleep] = useState<ActivityWithCaregiver | null>(null)
   const [diaperCount, setDiaperCount] = useState(0)
   const [loading, setLoading] = useState(true)
-  const [quickAddOpen, setQuickAddOpen] = useState(false)
 
   useEffect(() => {
     if (!activeChild) return
@@ -125,6 +122,7 @@ export function ActivityDashboard() {
   const running = runningPump ?? runningSleep
   const runningTracker = running ? trackerForType(running.type as never) : null
   const trackerOrder: Tracker[] = ['feed', 'pump', 'sleep', 'diaper']
+  const visibleTrackers = new Set(activeChild.visible_trackers ?? trackerOrder)
 
   return (
     <>
@@ -150,7 +148,7 @@ export function ActivityDashboard() {
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
           {trackerOrder
-            .filter((t) => t !== runningTracker)
+            .filter((t) => t !== runningTracker && visibleTrackers.has(t))
             .map((tracker) => {
               if (tracker === 'feed') {
                 const summary = lastFeed ? summarizeActivity(lastFeed) : null
@@ -211,44 +209,9 @@ export function ActivityDashboard() {
         </div>
       )}
 
-      {children.length > 0 && (
-        <>
-          {quickAddOpen && (
-            <button
-              aria-label="Close quick add"
-              onClick={() => setQuickAddOpen(false)}
-              style={{ position: 'fixed', inset: 0, background: 'var(--sheet-scrim)', border: 'none', zIndex: 20 }}
-            />
-          )}
-          <div style={{ position: 'fixed', right: 20, bottom: 'calc(74px + 22px + env(safe-area-inset-bottom))', display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 12, zIndex: 21 }}>
-            {quickAddOpen &&
-              (['sleep', 'diaper', 'pump', 'feed'] as Tracker[]).map((tracker) => (
-                <div key={tracker} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                  <Badge tone="neutral">{TRACKER_LABEL[tracker]}</Badge>
-                  <IconButton
-                    icon="plus"
-                    label={`Log ${TRACKER_LABEL[tracker]}`}
-                    variant="solid"
-                    size="md"
-                    style={accentVars(tracker)}
-                    onClick={() => {
-                      setQuickAddOpen(false)
-                      navigate(`/app/log/${tracker}`)
-                    }}
-                  />
-                </div>
-              ))}
-            <IconButton
-              icon="plus"
-              label="Log an entry"
-              variant="solid"
-              size="fab"
-              onClick={() => setQuickAddOpen((v) => !v)}
-              style={{ transform: quickAddOpen ? 'rotate(45deg)' : undefined, transition: 'transform var(--motion-base) var(--motion-ease)' }}
-            />
-          </div>
-        </>
-      )}
+      <Button variant="ghost" icon="pencil" fullWidth onClick={() => navigate('/app/activities/edit')}>
+        Edit Activities
+      </Button>
     </>
   )
 }

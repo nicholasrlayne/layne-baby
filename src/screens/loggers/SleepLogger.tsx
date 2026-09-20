@@ -168,7 +168,7 @@ export function SleepLogger() {
           <>
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 24, padding: '36px 0 28px', borderBottom: '1px solid var(--border-subtle)' }}>
               <TimerDisplay
-                label={running ? `Asleep since ${formatClockTime(startTime)}` : endTime ? 'Nap logged' : 'Not started'}
+                label={running ? `Asleep since ${formatClockTime(startTime)}` : endTime ? 'Sleep logged' : 'Not started'}
                 startedAt={startTime}
                 running={running}
                 accent="sleep"
