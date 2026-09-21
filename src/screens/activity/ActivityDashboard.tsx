@@ -7,7 +7,7 @@ import { TrackerCard } from '../../components/TrackerCard'
 import { Button } from '../../components/Button'
 import { accentVars, TRACKER_LABEL } from '../../components/accent'
 import { formatElapsed, useElapsedSeconds } from '../../lib/useElapsed'
-import { formatChildAge, formatClockTime, formatDateHeader, timeAgo } from '../../lib/format'
+import { formatChildAge, formatClockTime, formatDateHeader, formatDuration, timeAgo } from '../../lib/format'
 import { summarizeActivity } from '../../lib/activitySummary'
 import { caregiverName, trackerForType, type ActivityWithCaregiver, type Tracker } from '../../lib/types'
 import { countTodayDiapers, getLastActivity, getRunningActivity, updateActivity } from '../../lib/api'
@@ -77,6 +77,58 @@ function RunningCard({ activity, onStopped }: { activity: ActivityWithCaregiver;
   )
 }
 
+function SleepStatusCard({
+  runningSleep,
+  lastSleep,
+  onAdd,
+  onOpen,
+}: {
+  runningSleep: ActivityWithCaregiver | null
+  lastSleep: ActivityWithCaregiver | null
+  onAdd: () => void
+  onOpen: () => void
+}) {
+  const anchor = runningSleep ? runningSleep.started_at : lastSleep?.ended_at ?? new Date().toISOString()
+  const elapsedSeconds = useElapsedSeconds(anchor, true)
+
+  if (runningSleep) {
+    return (
+      <TrackerCard
+        tracker="sleep"
+        label="Sleeping"
+        sublabel={`started ${formatClockTime(runningSleep.started_at)} · ${caregiverName(runningSleep)}`}
+        value={formatDuration(Math.floor(elapsedSeconds / 60))}
+        running
+        onAdd={onAdd}
+        onOpen={onOpen}
+      />
+    )
+  }
+
+  if (lastSleep?.ended_at) {
+    return (
+      <TrackerCard
+        tracker="sleep"
+        label="Woke up"
+        sublabel={`${formatClockTime(lastSleep.ended_at)} · ${caregiverName(lastSleep)}`}
+        value={timeAgo(lastSleep.ended_at)}
+        onAdd={onAdd}
+        onOpen={onOpen}
+      />
+    )
+  }
+
+  return (
+    <TrackerCard
+      tracker="sleep"
+      label="No sleep logged yet"
+      sublabel="Log the first one"
+      value="—"
+      onAdd={onAdd}
+    />
+  )
+}
+
 export function ActivityDashboard() {
   const navigate = useNavigate()
   const { activeChild, activeChildId, children, setActiveChildId, activitiesVersion } = useAppData()
@@ -119,7 +171,7 @@ export function ActivityDashboard() {
 
   if (!activeChild) return null
 
-  const running = runningPump ?? runningSleep
+  const running = runningPump
   const runningTracker = running ? trackerForType(running.type as never) : null
   const trackerOrder: Tracker[] = ['feed', 'pump', 'sleep', 'diaper']
   const visibleTrackers = new Set(activeChild.visible_trackers ?? trackerOrder)
@@ -147,7 +199,6 @@ export function ActivityDashboard() {
             activity={running}
             onStopped={() => {
               setRunningPump(null)
-              setRunningSleep(null)
             }}
           />
         </div>
@@ -188,15 +239,18 @@ export function ActivityDashboard() {
                   />
                 )
               } else if (tracker === 'sleep') {
-                const summary = lastSleep ? summarizeActivity(lastSleep) : null
                 card = (
-                  <TrackerCard
-                    tracker="sleep"
-                    label={lastSleep ? 'Last sleep' : 'No sleep logged yet'}
-                    sublabel={lastSleep ? `${formatClockTime(lastSleep.started_at)} · ${caregiverName(lastSleep)}` : 'Log the first one'}
-                    value={summary?.value ?? '—'}
+                  <SleepStatusCard
+                    runningSleep={runningSleep}
+                    lastSleep={lastSleep}
                     onAdd={() => navigate('/app/log/sleep')}
-                    onOpen={lastSleep ? () => navigate(`/app/log/sleep?entryId=${lastSleep.id}`) : undefined}
+                    onOpen={
+                      runningSleep
+                        ? () => navigate('/app/log/sleep')
+                        : lastSleep
+                          ? () => navigate(`/app/log/sleep?entryId=${lastSleep.id}`)
+                          : () => navigate('/app/log/sleep')
+                    }
                   />
                 )
               } else {
