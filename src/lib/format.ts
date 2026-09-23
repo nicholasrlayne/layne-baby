@@ -37,6 +37,14 @@ export function formatDayGroup(iso: string): string {
   return `${format(d, 'EEEE, MMM d')}${yearSuffix}`
 }
 
+export function formatCompactDate(iso: string): string {
+  const d = new Date(iso)
+  if (isToday(d)) return ''
+  if (isYesterday(d)) return 'Yesterday'
+  const yearSuffix = d.getFullYear() !== new Date().getFullYear() ? `, ${d.getFullYear()}` : ''
+  return `${format(d, 'MMM d')}${yearSuffix}`
+}
+
 export function timeAgo(iso: string): string {
   const now = new Date()
   const then = new Date(iso)
