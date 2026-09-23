@@ -1,4 +1,4 @@
-import type { CSSProperties, KeyboardEvent, MouseEvent } from 'react'
+import type { CSSProperties, KeyboardEvent, MouseEvent, ReactNode } from 'react'
 import { accentVars, TRACKER_LABEL } from './accent'
 import { IconButton } from './IconButton'
 import type { Tracker } from '../lib/types'
@@ -14,9 +14,11 @@ interface TrackerCardProps {
   onAdd: () => void
   /** Opens the most recent entry for editing when tapping the card itself. */
   onOpen?: () => void
+  /** Extra content rendered inside the card, below the main body. */
+  children?: ReactNode
 }
 
-export function TrackerCard({ tracker, label, sublabel, value, unit, running, onAdd, onOpen }: TrackerCardProps) {
+export function TrackerCard({ tracker, label, sublabel, value, unit, running, onAdd, onOpen, children }: TrackerCardProps) {
   function handleAdd(e: MouseEvent) {
     e.stopPropagation()
     onAdd()
@@ -60,6 +62,7 @@ export function TrackerCard({ tracker, label, sublabel, value, unit, running, on
           style={running ? ({ '--accent-color': 'var(--status-warning)', '--accent-hover': 'var(--status-warning)' } as CSSProperties) : undefined}
         />
       </div>
+      {children}
     </div>
   )
 }

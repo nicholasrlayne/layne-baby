@@ -172,6 +172,22 @@ export async function getRunningActivity(
   return data as unknown as ActivityWithCaregiver | null
 }
 
+export async function getRecentSleepSessions(
+  childId: string,
+  limit = 3,
+): Promise<ActivityWithCaregiver[]> {
+  const { data, error } = await supabase
+    .from('activities')
+    .select(ACTIVITY_SELECT)
+    .eq('child_id', childId)
+    .eq('type', 'sleep')
+    .not('ended_at', 'is', null)
+    .order('started_at', { ascending: false })
+    .limit(limit)
+  if (error) throw error
+  return (data ?? []) as unknown as ActivityWithCaregiver[]
+}
+
 export interface NewActivity {
   family_id: string
   child_id: string

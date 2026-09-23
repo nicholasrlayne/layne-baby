@@ -7,10 +7,10 @@ import { TrackerCard } from '../../components/TrackerCard'
 import { Button } from '../../components/Button'
 import { accentVars, TRACKER_LABEL } from '../../components/accent'
 import { formatElapsed, useElapsedSeconds } from '../../lib/useElapsed'
-import { formatChildAge, formatClockTime, formatDateHeader, formatDuration, timeAgo } from '../../lib/format'
+import { formatChildAge, formatClockTime, formatCompactDate, formatDateHeader, formatDuration, timeAgo } from '../../lib/format'
 import { summarizeActivity } from '../../lib/activitySummary'
 import { caregiverName, trackerForType, type ActivityWithCaregiver, type Tracker } from '../../lib/types'
-import { countTodayDiapers, getLastActivity, getRunningActivity, updateActivity } from '../../lib/api'
+import { countTodayDiapers, getLastActivity, getRecentSleepSessions, getRunningActivity, updateActivity } from '../../lib/api'
 
 const TRACKER_TYPES: Record<Tracker, string[]> = {
   feed: ['feed_breastfeed', 'feed_bottle', 'feed_solids', 'feed_combo'],
@@ -77,55 +77,71 @@ function RunningCard({ activity, onStopped }: { activity: ActivityWithCaregiver;
   )
 }
 
+function SleepHistoryRow({ session, onClick }: { session: ActivityWithCaregiver; onClick: () => void }) {
+  function handleClick(e: MouseEvent) {
+    e.stopPropagation()
+    onClick()
+  }
+
+  const date = formatCompactDate(session.ended_at!)
+  const wokeAt = formatClockTime(session.ended_at!)
+  return (
+    <button type="button" className="lb-sleeprow" onClick={handleClick}>
+      <span className="lb-sleeprow__value">{summarizeActivity(session).value}</span>
+      <span className="lb-sleeprow__meta">{date ? `${date} · ${wokeAt}` : wokeAt}</span>
+    </button>
+  )
+}
+
 function SleepStatusCard({
   runningSleep,
   lastSleep,
+  history,
   onAdd,
   onOpen,
+  onOpenSession,
 }: {
   runningSleep: ActivityWithCaregiver | null
   lastSleep: ActivityWithCaregiver | null
+  history: ActivityWithCaregiver[]
   onAdd: () => void
   onOpen: () => void
+  onOpenSession: (session: ActivityWithCaregiver) => void
 }) {
   const anchor = runningSleep ? runningSleep.started_at : lastSleep?.ended_at ?? new Date().toISOString()
   const elapsedSeconds = useElapsedSeconds(anchor, true)
 
+  let label: string
+  let sublabel: string
+  let value: string
   if (runningSleep) {
-    return (
-      <TrackerCard
-        tracker="sleep"
-        label="Sleeping"
-        sublabel={`started ${formatClockTime(runningSleep.started_at)} · ${caregiverName(runningSleep)}`}
-        value={formatDuration(Math.floor(elapsedSeconds / 60))}
-        running
-        onAdd={onAdd}
-        onOpen={onOpen}
-      />
-    )
-  }
-
-  if (lastSleep?.ended_at) {
-    return (
-      <TrackerCard
-        tracker="sleep"
-        label="Woke up"
-        sublabel={`${formatClockTime(lastSleep.ended_at)} · ${caregiverName(lastSleep)}`}
-        value={timeAgo(lastSleep.ended_at)}
-        onAdd={onAdd}
-        onOpen={onOpen}
-      />
-    )
+    label = 'Sleeping'
+    sublabel = `started ${formatClockTime(runningSleep.started_at)} · ${caregiverName(runningSleep)}`
+    value = formatDuration(Math.floor(elapsedSeconds / 60))
+  } else if (lastSleep?.ended_at) {
+    label = 'Woke up'
+    sublabel = `${formatClockTime(lastSleep.ended_at)} · ${caregiverName(lastSleep)}`
+    value = timeAgo(lastSleep.ended_at)
+  } else {
+    label = 'No sleep logged yet'
+    sublabel = 'Log the first one'
+    value = '—'
   }
 
   return (
     <TrackerCard
       tracker="sleep"
-      label="No sleep logged yet"
-      sublabel="Log the first one"
-      value="—"
+      label={label}
+      sublabel={sublabel}
+      value={value}
+      running={!!runningSleep}
       onAdd={onAdd}
-    />
+      onOpen={runningSleep || lastSleep ? onOpen : undefined}
+    >
+      {history.map((session) => (
+        <SleepHistoryRow key={session.id} session={session} onClick={() => onOpenSession(session)} />
+      ))}
+    </TrackerCard>
   )
 }
 
@@ -138,6 +154,7 @@ export function ActivityDashboard() {
   const [lastDiaper, setLastDiaper] = useState<ActivityWithCaregiver | null>(null)
   const [runningPump, setRunningPump] = useState<ActivityWithCaregiver | null>(null)
   const [runningSleep, setRunningSleep] = useState<ActivityWithCaregiver | null>(null)
+  const [sleepHistory, setSleepHistory] = useState<ActivityWithCaregiver[]>([])
   const [diaperCount, setDiaperCount] = useState(0)
   const [loading, setLoading] = useState(true)
 
@@ -152,8 +169,9 @@ export function ActivityDashboard() {
       getLastActivity(activeChild.id, TRACKER_TYPES.diaper as never[]),
       getRunningActivity(activeChild.id, TRACKER_TYPES.pump as never[]),
       getRunningActivity(activeChild.id, TRACKER_TYPES.sleep as never[]),
+      getRecentSleepSessions(activeChild.id, 3),
       countTodayDiapers(activeChild.id),
-    ]).then(([feed, pump, sleep, diaper, runPump, runSleep, count]) => {
+    ]).then(([feed, pump, sleep, diaper, runPump, runSleep, sleepSessions, count]) => {
       if (cancelled) return
       setLastFeed(feed)
       setLastPump(pump)
@@ -161,6 +179,7 @@ export function ActivityDashboard() {
       setLastDiaper(diaper)
       setRunningPump(runPump)
       setRunningSleep(runSleep)
+      setSleepHistory(sleepSessions)
       setDiaperCount(count)
       setLoading(false)
     })
@@ -243,6 +262,7 @@ export function ActivityDashboard() {
                   <SleepStatusCard
                     runningSleep={runningSleep}
                     lastSleep={lastSleep}
+                    history={sleepHistory}
                     onAdd={() => navigate('/app/log/sleep')}
                     onOpen={
                       runningSleep
@@ -251,6 +271,7 @@ export function ActivityDashboard() {
                           ? () => navigate(`/app/log/sleep?entryId=${lastSleep.id}`)
                           : () => navigate('/app/log/sleep')
                     }
+                    onOpenSession={(session) => navigate(`/app/log/sleep?entryId=${session.id}`)}
                   />
                 )
               } else {

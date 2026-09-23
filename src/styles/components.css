@@ -134,6 +134,25 @@
 .lb-trackercard__sublabel { display: block; margin-top: 6px; font-family: var(--font-sans); font-size: 13px; color: var(--text-secondary); }
 .lb-trackercard__label { display: block; font-family: var(--font-sans); font-size: 13px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--text-muted); }
 
+.lb-sleeprow {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: var(--space-md) var(--space-lg);
+  border-top: 1px solid var(--border-subtle);
+  background: transparent;
+}
+.lb-sleeprow:hover { background: var(--bg-raised); }
+.lb-sleeprow__value {
+  display: block;
+  font-family: var(--font-serif);
+  font-size: 20px;
+  line-height: 1.2;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-primary);
+}
+.lb-sleeprow__meta { display: block; margin-top: 2px; font-family: var(--font-sans); font-size: 13px; color: var(--text-secondary); }
+
 /* ---------- ChildSwitcher ---------- */
 .lb-childswitcher {
   display: flex;
