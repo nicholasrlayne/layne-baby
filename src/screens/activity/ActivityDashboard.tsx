@@ -8,7 +8,7 @@ import { Button } from '../../components/Button'
 import { accentVars, TRACKER_LABEL } from '../../components/accent'
 import { formatElapsed, useElapsedSeconds } from '../../lib/useElapsed'
 import { formatChildAge, formatClockTime, formatCompactDate, formatDateHeader, formatDuration, timeAgo } from '../../lib/format'
-import { summarizeActivity } from '../../lib/activitySummary'
+import { classifySleepType, summarizeActivity } from '../../lib/activitySummary'
 import { caregiverName, trackerForType, type ActivityWithCaregiver, type Tracker } from '../../lib/types'
 import { countTodayDiapers, getLastActivity, getRecentSleepSessions, getRunningActivity, updateActivity } from '../../lib/api'
 
@@ -87,6 +87,7 @@ function SleepHistoryRow({ session, onClick }: { session: ActivityWithCaregiver;
   const wokeAt = formatClockTime(session.ended_at!)
   return (
     <button type="button" className="lb-sleeprow" onClick={handleClick}>
+      <span className="lb-sleeprow__type">{classifySleepType(session.started_at, session.ended_at!)}</span>
       <span className="lb-sleeprow__value">{summarizeActivity(session).value}</span>
       <span className="lb-sleeprow__meta">{date ? `${date} · ${wokeAt}` : wokeAt}</span>
     </button>

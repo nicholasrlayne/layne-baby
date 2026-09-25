@@ -17,6 +17,19 @@ export interface ActivitySummary {
   unit?: string
 }
 
+/**
+ * Nights run long and often start in the evening; naps are short and happen
+ * mid-day. Either signal alone can be wrong (a late catnap, an unusually
+ * long afternoon nap), so a session counts as overnight if it starts in the
+ * evening/night window or simply runs long enough to be a night's sleep.
+ */
+export function classifySleepType(startedAt: string, endedAt: string): 'Overnight Sleep' | 'Nap' {
+  const startHour = new Date(startedAt).getHours()
+  const isNightStart = startHour >= 18 || startHour < 6
+  const isLongStretch = differenceInMinutes(new Date(endedAt), new Date(startedAt)) >= 300
+  return isNightStart || isLongStretch ? 'Overnight Sleep' : 'Nap'
+}
+
 export function summarizeActivity(activity: ActivityWithCaregiver): ActivitySummary {
   const data = activity.data as Record<string, unknown>
 

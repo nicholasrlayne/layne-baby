@@ -143,6 +143,16 @@
   background: transparent;
 }
 .lb-sleeprow:hover { background: var(--bg-raised); }
+.lb-sleeprow__type {
+  display: block;
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 2px;
+}
 .lb-sleeprow__value {
   display: block;
   font-family: var(--font-serif);
