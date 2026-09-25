@@ -169,7 +169,7 @@ export function ActivityDashboard() {
       getLastActivity(activeChild.id, TRACKER_TYPES.diaper as never[]),
       getRunningActivity(activeChild.id, TRACKER_TYPES.pump as never[]),
       getRunningActivity(activeChild.id, TRACKER_TYPES.sleep as never[]),
-      getRecentSleepSessions(activeChild.id, 3),
+      getRecentSleepSessions(activeChild.id, 2),
       countTodayDiapers(activeChild.id),
     ]).then(([feed, pump, sleep, diaper, runPump, runSleep, sleepSessions, count]) => {
       if (cancelled) return
