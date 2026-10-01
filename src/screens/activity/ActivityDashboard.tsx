@@ -84,12 +84,12 @@ function SleepHistoryRow({ session, onClick }: { session: ActivityWithCaregiver;
   }
 
   const date = formatCompactDate(session.ended_at!)
-  const wokeAt = formatClockTime(session.ended_at!)
+  const timeRange = `${formatClockTime(session.started_at)} – ${formatClockTime(session.ended_at!)}`
   return (
     <button type="button" className="lb-sleeprow" onClick={handleClick}>
       <span className="lb-sleeprow__type">{classifySleepType(session.started_at, session.ended_at!)}</span>
       <span className="lb-sleeprow__value">{summarizeActivity(session).value}</span>
-      <span className="lb-sleeprow__meta">{date ? `${date} · ${wokeAt}` : wokeAt}</span>
+      <span className="lb-sleeprow__meta">{date ? `${date} · ${timeRange}` : timeRange}</span>
     </button>
   )
 }
